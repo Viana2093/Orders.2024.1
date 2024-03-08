@@ -40,7 +40,7 @@ namespace Orders.Frontend.Repositories
                 return "No tienes permiso para hacer esta operación";
             }
 
-            return "Error inesperado";
+            return "Ha ocurrido un error inesperado";
         }
     }
 }

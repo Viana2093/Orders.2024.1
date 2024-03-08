@@ -1,44 +1,40 @@
 ﻿@page "/countries"
-
-@inject IRepository repository
-
 <h3>Paises</h3>
-@if (Countries == null)
-{
-    <p>Cargando...</p>
-}
-else
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Nombre Paies</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var country in Countries!)
-            {
+
+<div class="mb-3">
+    <a class="btn btn-primary" href="/countries/create">Nuevo País</a>
+</div>
+
+
+<GenericList MyList="Countries">
+
+    @*     <Loading>
+    <div class="d-flex justify-content-center align-items-center">
+    <img src="https://img.pikbest.com/png-images/20190918/cartoon-snail-loading-loading-gif-animation_2734139.png!bw700" />
+    </div>
+    </Loading> *@
+    <Body>
+        <table class="table table-bordered table-striped">
+            <thead>
                 <tr>
-                    <td>@country.Name</td>
-                    <td>
-                        <a class="btn btn-warning">Editar</a>
-                        <button class="btn btn-danger">Eliinar</button>
-                    </td>
+                    <th>Nombre Paies</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
-@code {
+            </thead>
+            <tbody>
+                @foreach (var country in Countries!)
+                {
+                    <tr>
+                        <td>@country.Name</td>
+                        <td>
+                            <a class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger">Eliinar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
 
-    public List<Country>? Countries { get; set; }
 
-    protected async override Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        var responseHttpp = await repository.GetAsync<List<Country>>("api/countries");
-        Countries = responseHttpp.Response;
-    }
-
-}
