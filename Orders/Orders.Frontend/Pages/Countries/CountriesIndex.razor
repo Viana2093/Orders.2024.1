@@ -17,7 +17,7 @@
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>Nombre Paies</th>
+                    <th>Nombre Pais</th>
                     <th></th>
                 </tr>
             </thead>
@@ -27,8 +27,8 @@
                     <tr>
                         <td>@country.Name</td>
                         <td>
-                            <a class="btn btn-warning">Editar</a>
-                            <button class="btn btn-danger">Eliinar</button>
+                            <a href="/countries/edit/@country.Id" class="btn btn-warning">Editar</a>
+                            <button @onclick=@(() => DeleteAsync(country)) class="btn btn-danger">Eliinar</button>
                         </td>
                     </tr>
                 }
