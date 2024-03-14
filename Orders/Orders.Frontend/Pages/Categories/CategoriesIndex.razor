@@ -1,0 +1,37 @@
+﻿@page "/categories"
+<h3>Categorias</h3>
+
+<div class="mb-3">
+    <a class="btn btn-primary" href="/categories/create">Nueva Categoria</a>
+</div>
+
+<GenericList MyList="Categories">
+
+    @*     <Loading>
+    <div class="d-flex justify-content-center align-items-center">
+    <img src="https://img.pikbest.com/png-images/20190918/cartoon-snail-loading-loading-gif-animation_2734139.png!bw700" />
+    </div>
+    </Loading> *@
+    <Body>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre Categoria</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Categories!)
+                {
+                    <tr>
+                        <td>@category.Name</td>
+                        <td>
+                            <a href="/categories/edit/@category.Id" class="btn btn-warning">Editar</a>
+                            <button @onclick=@(() => DeleteAsync(category)) class="btn btn-danger">Eliinar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
