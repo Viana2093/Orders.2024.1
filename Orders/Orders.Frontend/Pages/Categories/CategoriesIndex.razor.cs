@@ -9,9 +9,9 @@ namespace Orders.Frontend.Pages.Categories
     public partial class CategoriesIndex
     {
 
-        [Inject] private IRepository repository { get; set; } = null!;
-        [Inject] private NavigationManager navigationManager { get; set; } = null!;
-        [Inject] private SweetAlertService sweetAlertService { get; set; } = null!;
+        [Inject] private IRepository Repository { get; set; } = null!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+        [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
 
         public List<Category>? Categories { get; set; }
 
@@ -23,12 +23,12 @@ namespace Orders.Frontend.Pages.Categories
 
         private async Task LoadAsync()
         {
-            var responseHttpp = await repository.GetAsync<List<Category>>("api/categories");
+            var responseHttpp = await Repository.GetAsync<List<Category>>("api/categories");
             Categories = responseHttpp.Response;
             if (responseHttpp.Error)
             {
                 var message = await responseHttpp.GetErrorMessageAsync();
-                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
             Categories = responseHttpp.Response;
@@ -36,7 +36,7 @@ namespace Orders.Frontend.Pages.Categories
 
         private async Task DeleteAsync(Category category)
         {
-            var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            var result = await SweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
                 Text = $"¿Estas seguro de querer borrar la categoria: {category.Name}?",
@@ -50,25 +50,25 @@ namespace Orders.Frontend.Pages.Categories
                 return;
             }
 
-            var responseHttpp = await repository.DeleteAsync<Country>($"api/categories/{category.Id}");
+            var responseHttpp = await Repository.DeleteAsync<Country>($"api/categories/{category.Id}");
 
             if (responseHttpp.Error)
             {
                 if (responseHttpp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
                 {
-                    navigationManager.NavigateTo("/categories");
+                    NavigationManager.NavigateTo("/categories");
                 }
                 else
                 {
                     var mensajeError = await responseHttpp.GetErrorMessageAsync();
-                    await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+                    await SweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
                 }
                 return;
             }
 
 
             await LoadAsync();
-            var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            var toast = SweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,
                 Position = SweetAlertPosition.BottomEnd,

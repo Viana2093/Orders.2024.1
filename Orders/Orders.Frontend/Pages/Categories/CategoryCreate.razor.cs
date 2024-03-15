@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Components;
 using Orders.Frontend.Pages.Countries;
 using Orders.Frontend.Repositories;
+using Orders.Frontend.Shared;
 using Orders.Shared.Entities;
 
 namespace Orders.Frontend.Pages.Categories
 {
     public partial class CategoryCreate
     {
-        private CategoryForm? categoryForm;
+        //private CategoryForm? categoryForm;
+        private FormWithName<Category>? categoryForm;
 
         private Category category = new();
         [Inject] private IRepository repository { get; set; } = null!;
