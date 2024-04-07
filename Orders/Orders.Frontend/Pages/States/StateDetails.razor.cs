@@ -4,43 +4,51 @@ using Orders.Frontend.Repositories;
 using Orders.Shared.Entities;
 using System.Net;
 
-namespace Orders.Frontend.Pages.Countries
+namespace Orders.Frontend.Pages.States
 {
-    public partial class CountriesIndex
+    public partial class StateDetails
     {
-        [Inject] private IRepository Repository { get; set; } = null!;
+        private State? state;
+
+        [Parameter] public int StateId { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
-
-        public List<Country>? Countries { get; set; }
+        [Inject] private IRepository Repository { get; set; } = null!;
 
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
-
         }
 
         private async Task LoadAsync()
         {
-            var responseHttp = await Repository.GetAsync<List<Country>>("api/countries");
-            Countries = responseHttp.Response;
+            var responseHttp = await Repository.GetAsync<State>($"/api/states/{StateId}");
             if (responseHttp.Error)
             {
+                if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                {
+                    NavigationManager.NavigateTo("/countries");
+                    return;
+                }
+
                 var message = await responseHttp.GetErrorMessageAsync();
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
-            Countries = responseHttp.Response;
+
+            state = responseHttp.Response;
         }
 
-        private async Task DeleteAsync(Country country)
+        private async Task DeleteAsync(City city)
         {
             var result = await SweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Estas seguro de querer borrar el pais: {country.Name}?",
+                Text = $"¿Realmente deseas eliminar la ciudad? {city.Name}",
                 Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
             });
 
             var confirm = string.IsNullOrEmpty(result.Value);
@@ -49,22 +57,16 @@ namespace Orders.Frontend.Pages.Countries
                 return;
             }
 
-            var responseHttp = await Repository.DeleteAsync<Country>($"api/countries/{country.Id}");
-
+            var responseHttp = await Repository.DeleteAsync<City>($"/api/cities/{city.Id}");
             if (responseHttp.Error)
             {
-                if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
-                {
-                    NavigationManager.NavigateTo("/countries");
-                }
-                else
+                if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
                 {
                     var message = await responseHttp.GetErrorMessageAsync();
                     await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                    return;
                 }
-                return;
             }
-
 
             await LoadAsync();
             var toast = SweetAlertService.Mixin(new SweetAlertOptions
@@ -76,6 +78,5 @@ namespace Orders.Frontend.Pages.Countries
             });
             await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
         }
-
     }
 }

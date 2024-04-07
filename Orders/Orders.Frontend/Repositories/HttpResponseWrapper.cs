@@ -13,11 +13,11 @@ namespace Orders.Frontend.Repositories
 
         public T? Response { get; }
         public bool Error { get; }
-        public HttpResponseMessage HttpResponseMessage { get; set; }
+        public HttpResponseMessage HttpResponseMessage { get; }
 
         public async Task<string?> GetErrorMessageAsync()
         {
-            if (Error)
+            if (!Error)
             {
                 return null;
             }

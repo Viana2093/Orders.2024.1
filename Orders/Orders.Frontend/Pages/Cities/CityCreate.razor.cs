@@ -4,29 +4,28 @@ using Orders.Frontend.Repositories;
 using Orders.Frontend.Shared;
 using Orders.Shared.Entities;
 
-namespace Orders.Frontend.Pages.Countries
+namespace Orders.Frontend.Pages.Cities
 {
-    public partial class CountryCreate
+    public partial class CityCreate
     {
-        //private CountryForm? countryForm;
-        private FormWithName<Country>? countryForm;
+        private City city = new();
+        private FormWithName<City>? cityForm;
 
-        private Country country = new();
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
+        [Parameter] public int StateId { get; set; }
 
         private async Task CreateAsync()
         {
-            var responseHttp = await Repository.PostAsync("/api/countries", country);
+            city.StateId = StateId;
+            var responseHttp = await Repository.PostAsync("/api/cities", city);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
-
             }
-
             Return();
             var toast = SweetAlertService.Mixin(new SweetAlertOptions
             {
@@ -40,8 +39,8 @@ namespace Orders.Frontend.Pages.Countries
 
         private void Return()
         {
-            countryForm!.FormPostedSuccessfully = true;
-            NavigationManager.NavigateTo("/countries");
+            cityForm!.FormPostedSuccessfully = true;
+            NavigationManager.NavigateTo($"/states/details/{StateId}");
         }
     }
 }
