@@ -40,8 +40,6 @@ namespace Orders.Backend.Controllers
             return BadRequest();
         }
 
-
-
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
@@ -52,5 +50,17 @@ namespace Orders.Backend.Controllers
             }
             return NotFound(response.Message);
         }
+
+        [HttpGet("totalPages")]
+        public override async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
+        {
+            var action = await _countriesUnitOfWork.GetTotalPagesAsync(pagination);
+            if (action.WasSuccess)
+            {
+                return Ok(action.Result);
+            }
+            return BadRequest();
+        }
+
     }
 }
