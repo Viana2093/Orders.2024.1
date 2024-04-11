@@ -92,6 +92,8 @@ namespace Orders.Backend.Data
             {
                 _context.Categories.Add(new Shared.Entities.Category { Name = "Electrodomesticos" });
                 _context.Categories.Add(new Shared.Entities.Category { Name = "Licores" });
+                _context.Categories.Add(new Shared.Entities.Category { Name = "Calzado" });
+                _context.Categories.Add(new Shared.Entities.Category { Name = "Jugeteria" });
                 await _context.SaveChangesAsync();
             }
         }

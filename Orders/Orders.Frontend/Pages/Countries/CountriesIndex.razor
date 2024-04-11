@@ -14,12 +14,12 @@
     </div>
     </Loading> *@
     <Body>
-        <table class="table table-bordered table-striped">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Nombre Pais</th>
-                    <th>Despartamentos / Estados</th>
-                    <th></th>
+                    <th style="width:250px">Despartamentos / Estados</th>
+                    <th style="width:250px"></th>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +37,10 @@
                 }
             </tbody>
         </table>
+        <br />
+        <Pagination CurrentPage="currentPage"
+                    TotalPages="totalPages"
+                    SelectedPage="SelectedPageAsync" />
     </Body>
 </GenericList>
 

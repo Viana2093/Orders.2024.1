@@ -14,18 +14,20 @@ else
     <hr />
     <h4>Estados/Departamentos</h4>
     <hr />
-    <GenericList MyList="country.States!.ToList()">
+    @* <GenericList MyList="country.States!.ToList()"> *@
+    <GenericList MyList="states!">
         <Body>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Estado / Departamento</th>
-                        <th>Ciudades</th>
-                        <th></th>
+                        <th style="width:90px">Ciudades</th>
+                        <th style="width:210px"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var state in country.States!)
+                    @* @foreach (var state in country.States!) *@
+                    @foreach (var state in states!)
                     {
                         <tr>
                             <td>
@@ -43,6 +45,10 @@ else
                     }
                 </tbody>
             </table>
+
+            <Pagination CurrentPage="currentPage"
+                        TotalPages="totalPages"
+                        SelectedPage="SelectedPageAsync" />
         </Body>
     </GenericList>
 }
