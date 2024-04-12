@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Orders.Shared.Entities
 {
-    public class City: IEntityWithName
+    public class City : IEntityWithName
     {
         public int Id { get; set; }
 
@@ -21,5 +21,7 @@ namespace Orders.Shared.Entities
 
         public State? State { get; set; }
 
+
+        public ICollection<User>? Users { get; set; }
     }
 }
