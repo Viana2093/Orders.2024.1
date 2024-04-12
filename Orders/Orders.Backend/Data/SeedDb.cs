@@ -2,6 +2,8 @@
 using Orders.Backend.Services;
 using Microsoft.EntityFrameworkCore;
 using Orders.Shared.Responses;
+using Orders.Backend.UnitsWork.Interfaces;
+using Orders.Shared.Enums;
 
 namespace Orders.Backend.Data
 {
@@ -9,11 +11,13 @@ namespace Orders.Backend.Data
     {
         private readonly DataContext _context;
         private readonly IApiService _apiService;
+        private readonly IUsersUnitOfWork _usersUnitOfWork;
 
-        public SeedDb(DataContext context, IApiService apiService)
+        public SeedDb(DataContext context, IApiService apiService, IUsersUnitOfWork usersUnitOfWork)
         {
             _context = context;
             _apiService = apiService;
+            _usersUnitOfWork = usersUnitOfWork;
         }
 
         public async Task SeedAsync()
@@ -21,6 +25,9 @@ namespace Orders.Backend.Data
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
             await CheckCategoriesAsync();
+            await CheckRolesAsync();
+            await CheckUserAsync("1010", "Luis", "Viana", "viana1217@yopmail.com", "3113660723", "Calle Luna Calle Sol", UserType.Admin);
+            
 
         }
 
@@ -82,10 +89,12 @@ namespace Orders.Backend.Data
                     }
                 }
 
-                //    _context.Countries.Add(new Country
-                //    {
-                //        Name = "Colombia",
-                //        States = new List<State>()
+                //-------------------------------------------
+
+                //_context.Countries.Add(new Country
+                //{
+                //    Name = "Colombia",
+                //    States = new List<State>()
                 //{
                 //    new State()
                 //    {
@@ -110,11 +119,11 @@ namespace Orders.Backend.Data
                 //        }
                 //    },
                 //}
-                //    });
-                //    _context.Countries.Add(new Country
-                //    {
-                //        Name = "Estados Unidos",
-                //        States = new List<State>()
+                //});
+                //_context.Countries.Add(new Country
+                //{
+                //    Name = "Estados Unidos",
+                //    States = new List<State>()
                 //{
                 //    new State()
                 //    {
@@ -139,12 +148,11 @@ namespace Orders.Backend.Data
                 //        }
                 //    },
                 //}
-                //    });
+                //});
             }
 
             await _context.SaveChangesAsync();
         }
-
 
         private async Task CheckCategoriesAsync()
         {
@@ -157,5 +165,38 @@ namespace Orders.Backend.Data
                 await _context.SaveChangesAsync();
             }
         }
+
+        private async Task CheckRolesAsync()
+        {
+            await _usersUnitOfWork.CheckRoleAsync(UserType.Admin.ToString());
+            await _usersUnitOfWork.CheckRoleAsync(UserType.User.ToString());
+        }
+
+        private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
+        {
+            var user = await _usersUnitOfWork.GetUserAsync(email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    UserName = email,
+                    PhoneNumber = phone,
+                    Address = address,
+                    Document = document,
+                    City = _context.Cities.FirstOrDefault(),
+                    UserType = userType,
+                };
+
+                await _usersUnitOfWork.AddUserAsync(user, "123456");
+                await _usersUnitOfWork.AddUserToRoleAsync(user, userType.ToString());
+            }
+
+            return user;
+        }
+
+
     }
 }
