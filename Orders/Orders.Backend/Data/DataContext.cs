@@ -16,6 +16,7 @@ namespace Orders.Backend.Data
         public DbSet<Country> Countries { get; set; }
         public DbSet<State> States { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -35,7 +36,6 @@ namespace Orders.Backend.Data
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
-
         }
     }
 }

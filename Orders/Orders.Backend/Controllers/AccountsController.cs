@@ -11,7 +11,7 @@ using System.Text;
 namespace Orders.Backend.Controllers
 {
     [ApiController]
-    [Route("/api/accounts")]
+    [Route("api/[controller]")]
     public class AccountsController : ControllerBase
     {
         private readonly IUsersUnitOfWork _usersUnitOfWork;
