@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components;
 using Orders.Shared.Entities;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Orders.Frontend.Pages.Countries
 {
+
+    [Authorize(Roles = "Admin")]
     public partial class CountryForm
     {
         private EditContext editContext = null!;

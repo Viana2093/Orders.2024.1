@@ -1,4 +1,5 @@
 ﻿using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
@@ -6,6 +7,8 @@ using Orders.Shared.Entities;
 
 namespace Orders.Frontend.Pages.Categories
 {
+    [Authorize(Roles = "Admin")]
+
     public partial class CategoryForm
     {
         private EditContext editContext = null!;
