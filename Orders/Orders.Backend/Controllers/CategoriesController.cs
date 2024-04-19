@@ -42,6 +42,13 @@ namespace Orders.Backend.Controllers
             return BadRequest();
         }
 
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<IActionResult> GetComboAsync()
+        {
+            return Ok(await _categoriesUnitOfWork.GetComboAsync());
+        }
+
 
     }
 }
