@@ -1,55 +1,66 @@
 ﻿@page "/countries"
 <h3>Paises</h3>
 
-<div class="mb-3">
+@* <div class="mb-3">
     <a class="btn btn-primary" href="/countries/create">Nuevo País</a>
-</div>
+</div> *@
 
 
-<GenericList MyList="Countries">
+@* <GenericList MyList="Countries"> *@
 
-    @*     <Loading>
+@*     <Loading>
     <div class="d-flex justify-content-center align-items-center">
     <img src="https://img.pikbest.com/png-images/20190918/cartoon-snail-loading-loading-gif-animation_2734139.png!bw700" />
     </div>
     </Loading> *@
-    <Body>
+@* <Body> *@
 
-        <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
-            <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar país..." @bind-value="Filter" />
-            <button type="button" class="btn btn-outline-primary mx-1" @onclick="ApplyFilterAsync">Filtrar</button>
-            <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <span>
+            <i class="bi bi-globe-americas" /> Países
+            <a class="btn btn-primary btn-sm float-end" href="/countries/create"><i class="bi bi-plus-square" /> Nuevo País</a>
+        </span>
+    </div>
+    <div class="card-body">
+        <GenericList MyList="Countries">
+            <Body>
+                <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
+                    <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar país..." @bind-value="Filter" />
+                    <button type="button" class="btn btn-outline-primary mx-1" @onclick="ApplyFilterAsync">Filtrar</button>
+                    <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
+                </div>
 
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nombre Pais</th>
-                    <th style="width:250px">Despartamentos / Estados</th>
-                    <th style="width:250px"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var country in Countries!)
-                {
-                    <tr>
-                        <td>@country.Name</td>
-                        <td>@country.StatesNumber</td>
-                        <td>
-                            <a class="btn btn-warning btn-sm" href="/countries/edit/@country.Id">Editar</a>
-                            <a class="btn btn-info btn-sm" href="/countries/details/@country.Id">Detalles</a>
-                            <button @onclick=@(() => DeleteAsync(country)) class="btn btn-danger btn-sm">Eliminar</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <br />
-        <Pagination CurrentPage="currentPage"
-                    TotalPages="totalPages"
-                    SelectedPage="SelectedPageAsync" />
-    </Body>
-</GenericList>
-
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nombre Pais</th>
+                            <th style="width:250px">Despartamentos / Estados</th>
+                            <th style="width:168px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var country in Countries!)
+                        {
+                            <tr>
+                                <td><a href="/countries/details/@country.Id"> @country.Name</a></td>
+                                <td>@country.StatesNumber</td>
+                                <td>
+                                    <a class="btn btn-warning btn-sm" href="/countries/edit/@country.Id"><i class="bi bi-pencil" /> Editar</a>
+                                    @*                                     <a class="btn btn-info btn-sm" href="/countries/details/@country.Id">Detalles</a> *@
+                                    <button @onclick=@(() => DeleteAsync(country)) class="btn btn-danger btn-sm"><i class="bi bi-trash" />Eliminar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br />
+                <Pagination CurrentPage="currentPage"
+                            TotalPages="totalPages"
+                            SelectedPage="SelectedPageAsync" />
+            </Body>
+        </GenericList>
+    </div>
+</div>
 
