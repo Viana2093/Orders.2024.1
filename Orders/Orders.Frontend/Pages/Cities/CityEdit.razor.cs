@@ -1,4 +1,6 @@
-﻿using CurrieTechnologies.Razor.SweetAlert2;
+﻿using Blazored.Modal;
+using Blazored.Modal.Services;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Orders.Frontend.Repositories;
@@ -21,6 +23,7 @@ namespace Orders.Frontend.Pages.Cities
 
         [Parameter] public int CityId { get; set; }
 
+        [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
         protected override async Task OnParametersSetAsync()
         {
             var responseHttp = await Repository.GetAsync<City>($"/api/cities/{CityId}");
@@ -46,7 +49,9 @@ namespace Orders.Frontend.Pages.Cities
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
+            await BlazoredModal.CloseAsync(ModalResult.Ok());
             Return();
+
             var toast = SweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,

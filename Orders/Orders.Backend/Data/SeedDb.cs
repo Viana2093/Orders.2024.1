@@ -27,7 +27,7 @@ namespace Orders.Backend.Data
             await CheckCategoriesAsync();
             await CheckRolesAsync();
             await CheckUserAsync("1010", "Luis", "Viana", "viana1217@yopmail.com", "3113660723", "Calle Luna Calle Sol", UserType.Admin);
-            
+
 
         }
 
@@ -177,6 +177,9 @@ namespace Orders.Backend.Data
             var user = await _usersUnitOfWork.GetUserAsync(email);
             if (user == null)
             {
+                var city = await _context.Cities.FirstOrDefaultAsync(x => x.Name == "Medellín");
+                city ??= await _context.Cities.FirstOrDefaultAsync();
+
                 user = new User
                 {
                     FirstName = firstName,
@@ -186,12 +189,16 @@ namespace Orders.Backend.Data
                     PhoneNumber = phone,
                     Address = address,
                     Document = document,
-                    City = _context.Cities.FirstOrDefault(),
+                    City = city,//_context.Cities.FirstOrDefault(),
                     UserType = userType,
                 };
 
                 await _usersUnitOfWork.AddUserAsync(user, "123456");
                 await _usersUnitOfWork.AddUserToRoleAsync(user, userType.ToString());
+
+                var token = await _usersUnitOfWork.GenerateEmailConfirmationTokenAsync(user);
+                await _usersUnitOfWork.ConfirmEmailAsync(user, token);
+
             }
 
             return user;

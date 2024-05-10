@@ -23,7 +23,8 @@
     <div class="card-header">
         <span>
             <i class="bi bi-list-check"></i> Categorias
-            <a class="btn btn-sm btn-primary float-end" href="/categories/create"><i class="bi bi-plus-square"></i> Adicionar Categoría</a>
+            @* <a class="btn btn-sm btn-primary float-end" href="/categories/create"><i class="bi bi-plus-square"></i> Adicionar Categoría</a> *@
+            <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-circle" /> Adicionar Categoría</a>
         </span>
     </div>
     <div class="card-body">
@@ -43,7 +44,7 @@
                     <thead>
                         <tr>
                             <th>Nombre Categoria</th>
-                            <th style="width:168px"></th>
+                            <th style="width:250px"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,7 +53,8 @@
                             <tr>
                                 <td>@category.Name</td>
                                 <td>
-                                    <a href="/categories/edit/@category.Id" class="btn btn-sm btn-warning"><i class="bi bi-pencil" /> Editar</a>
+                                    @* <a href="/categories/edit/@category.Id" class="btn btn-sm btn-warning"><i class="bi bi-pencil" /> Editar</a> *@
+                                    <a @onclick=@(() => ShowModalAsync(category.Id, true)) class="btn btn-warning"><i class="bi bi-pencil" /> Editar</a>
                                     <button @onclick=@(() => DeleteAsync(category)) class="btn btn-sm btn-danger"><i class="bi bi-trash" /> Borrar</button>
                                 </td>
                             </tr>

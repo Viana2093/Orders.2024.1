@@ -1,21 +1,23 @@
+using Blazored.Modal.Services;
 using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Orders.Frontend.Repositories;
 using Orders.Frontend.Services;
 using Orders.Shared.DTOs;
 using Orders.Shared.Entities;
-using Orders.Shared.Enums;
+using System.Net;
 
 namespace Orders.Frontend.Pages.Auth
 {
-    public partial class Register
+    [Authorize]
+    public partial class EditUser
     {
-        private UserDTO userDTO = new();
 
+        private User? user;
         private List<Country>? countries;
         private List<State>? states;
         private List<City>? cities;
-        private bool loading;
         private string? imageUrl;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
@@ -23,14 +25,41 @@ namespace Orders.Frontend.Pages.Auth
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private ILoginService LoginService { get; set; } = null!;
 
+        [CascadingParameter] IModalService Modal { get; set; } = default!;
         protected override async Task OnInitializedAsync()
         {
+            await LoadUserAsyc();
             await LoadCountriesAsync();
+            await LoadStatesAsyn(user!.City!.State!.Country!.Id);
+            await LoadCitiesAsyn(user!.City!.State!.Id);
+
+            if (!string.IsNullOrEmpty(user!.Photo))
+            {
+                imageUrl = user.Photo;
+                user.Photo = null;
+            }
+        }
+
+        private async Task LoadUserAsyc()
+        {
+            var responseHttp = await Repository.GetAsync<User>($"/api/accounts");
+            if (responseHttp.Error)
+            {
+                if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                {
+                    NavigationManager.NavigateTo("/");
+                    return;
+                }
+                var messageError = await responseHttp.GetErrorMessageAsync();
+                await SweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+                return;
+            }
+            user = responseHttp.Response;
         }
 
         private void ImageSelected(string imagenBase64)
         {
-            userDTO.Photo = imagenBase64;
+            user!.Photo = imagenBase64;
             imageUrl = null;
         }
 
@@ -39,7 +68,7 @@ namespace Orders.Frontend.Pages.Auth
             var selectedCountry = Convert.ToInt32(e.Value!);
             states = null;
             cities = null;
-            userDTO.CityId = 0;
+            user!.CityId = 0;
             await LoadStatesAsyn(selectedCountry);
         }
 
@@ -47,7 +76,7 @@ namespace Orders.Frontend.Pages.Auth
         {
             var selectedState = Convert.ToInt32(e.Value!);
             cities = null;
-            userDTO.CityId = 0;
+            user!.CityId = 0;
             await LoadCitiesAsyn(selectedState);
         }
 
@@ -60,7 +89,6 @@ namespace Orders.Frontend.Pages.Auth
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
-
             countries = responseHttp.Response;
         }
 
@@ -73,7 +101,6 @@ namespace Orders.Frontend.Pages.Auth
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
-
             states = responseHttp.Response;
         }
 
@@ -90,14 +117,10 @@ namespace Orders.Frontend.Pages.Auth
             cities = responseHttp.Response;
         }
 
-        private async Task CreteUserAsync()
+        private async Task SaveUserAsync()
         {
-            loading = true;
-            userDTO.UserName = userDTO.Email;
-            userDTO.UserType = UserType.User;
-            var responseHttp = await Repository.PostAsync<UserDTO>("/api/accounts/CreateUser", userDTO);
-            //var responseHttp = await Repository.PostAsync<UserDTO, TokenDTO>("/api/accounts/CreateUser", userDTO);
-            loading = false;
+            var responseHttp = await Repository.PutAsync<User, TokenDTO>("/api/accounts", user!);
+            //var responseHttp = await Repository.PutAsync<User>("/api/accounts", user!);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
@@ -105,9 +128,15 @@ namespace Orders.Frontend.Pages.Auth
                 return;
             }
 
-            //await LoginService.LoginAsync(responseHttp.Response!.Token);
-            await SweetAlertService.FireAsync("Confirmación", "Su cuenta ha sido creada con éxito. Se te ha enviado un correo electrónico con las instrucciones para activar tu usuario.", SweetAlertIcon.Info);
+            await LoginService.LoginAsync(responseHttp.Response!.Token);
             NavigationManager.NavigateTo("/");
         }
+
+        private void ShowModal()
+        {
+            Modal.Show<ChangePassword>();
+        }
+
+
     }
 }
