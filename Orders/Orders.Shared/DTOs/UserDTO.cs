@@ -1,6 +1,5 @@
 ﻿using Orders.Shared.Entities;
 using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 
 namespace Orders.Shared.DTOs
 {

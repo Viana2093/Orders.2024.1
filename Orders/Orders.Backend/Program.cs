@@ -52,7 +52,6 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-
 builder.Services
     .AddControllers()
     .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -65,10 +64,8 @@ builder.Services.AddScoped<IFileStorage, FileStorage>();
 builder.Services.AddScoped<IMailHelper, MailHelper>();
 //Singleton
 
-
 builder.Services.AddIdentity<User, IdentityRole>(x =>
 {
-
     x.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
     x.SignIn.RequireConfirmedEmail = true;
 
@@ -81,11 +78,9 @@ builder.Services.AddIdentity<User, IdentityRole>(x =>
     x.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     x.Lockout.MaxFailedAccessAttempts = 3;
     x.Lockout.AllowedForNewUsers = true;
-
 })
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
-
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters
@@ -97,7 +92,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwtKey"]!)),
         ClockSkew = TimeSpan.Zero
     });
-
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IGenericUnitOfWork<>), typeof(GenericUnitOfWork<>));
@@ -127,7 +121,6 @@ void SeedData(WebApplication app)
         service!.SeedAsync().Wait();
     }
 }
-
 
 app.UseCors(x => x
     .AllowAnyMethod()
