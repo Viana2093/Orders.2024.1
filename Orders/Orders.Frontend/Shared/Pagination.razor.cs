@@ -1,29 +1,29 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
 
 namespace Orders.Frontend.Shared
 {
     public partial class Pagination
     {
         private List<PageModel> links = new();
+        private List<OptionModel> options = [];
+        private int selectedOptionValue = 10;
 
         [Parameter] public int CurrentPage { get; set; } = 1;
         [Parameter] public int TotalPages { get; set; }
         [Parameter] public int Radio { get; set; } = 10;
         [Parameter] public EventCallback<int> SelectedPage { get; set; }
-
-        private async Task InternalSelectedPage(PageModel pageModel)
-        {
-            if (pageModel.Page == CurrentPage || pageModel.Page == 0)
-            {
-                return;
-            }
-
-            await SelectedPage.InvokeAsync(pageModel.Page);
-        }
+        [Parameter] public EventCallback<int> RecordsNumber { get; set; }
 
         protected override void OnParametersSet()
         {
-            links = new List<PageModel>();
+            BuildPages();
+            BuildOptions();
+        }
+
+        private void BuildPages()
+        {
+            links = [];
             var previousLinkEnable = CurrentPage != 1;
             var previousLinkPage = CurrentPage - 1;
 
@@ -77,12 +77,48 @@ namespace Orders.Frontend.Shared
             });
         }
 
+        private void BuildOptions()
+        {
+            options =
+            [
+                new OptionModel { Value = 10, Name = "10" },
+                new OptionModel { Value = 25, Name = "25" },
+                new OptionModel { Value = 50, Name = "50" },
+                new OptionModel { Value = int.MaxValue, Name = "Todos" },
+            ];
+        }
+
+        private async Task InternalRecordsNumberSelected(ChangeEventArgs e)
+        {
+            if (e.Value != null)
+            {
+                selectedOptionValue = Convert.ToInt32(e.Value.ToString());
+            }
+            await RecordsNumber.InvokeAsync(selectedOptionValue);
+        }
+
+        private async Task InternalSelectedPage(PageModel pageModel)
+        {
+            if (pageModel.Page == CurrentPage || pageModel.Page == 0)
+            {
+                return;
+            }
+
+            await SelectedPage.InvokeAsync(pageModel.Page);
+        }
+
+        private class OptionModel
+        {
+            public string Name { get; set; } = null!;
+            public int Value { get; set; }
+        }
+
         private class PageModel
         {
-            public string Text { get; set; } = null!;
-            public int Page { get; set; }
-            public bool Enable { get; set; } = true;
             public bool Active { get; set; } = false;
+            public bool Enable { get; set; } = true;
+            public int Page { get; set; }
+            public string Text { get; set; } = null!;
         }
     }
 }
