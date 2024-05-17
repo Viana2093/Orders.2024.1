@@ -7,6 +7,7 @@ using Orders.Frontend.Services;
 using Orders.Frontend.AuthenticationProviders;
 using Orders.Frontend.Repositories;
 using Blazored.Modal;
+using MudBlazor.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -17,6 +18,7 @@ builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("http
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddSweetAlert2();
 builder.Services.AddBlazoredModal();
+builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 
 
