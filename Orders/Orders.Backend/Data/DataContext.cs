@@ -20,6 +20,8 @@ namespace Orders.Backend.Data
 
         public DbSet<State> States { get; set; }
 
+        public DbSet<TemporalOrder> TemporalOrders { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
