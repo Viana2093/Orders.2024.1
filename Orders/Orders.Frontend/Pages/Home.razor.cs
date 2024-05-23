@@ -2,7 +2,9 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Orders.Frontend.Pages.Auth;
 using Orders.Frontend.Repositories;
+using Orders.Shared.DTOs;
 using Orders.Shared.Entities;
 
 namespace Orders.Frontend.Pages
@@ -25,9 +27,37 @@ namespace Orders.Frontend.Pages
         [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
         [CascadingParameter] private IModalService Modal { get; set; } = default!;
 
+
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
+        }
+
+        protected async override Task OnParametersSetAsync()
+        {
+            await CheckIsAuthenticatedAsync();
+            await LoadCounterAsync();
+        }
+
+        private async Task CheckIsAuthenticatedAsync()
+        {
+            var authenticationState = await authenticationStateTask;
+            isAuthenticated = authenticationState.User.Identity!.IsAuthenticated;
+        }
+
+        private async Task LoadCounterAsync()
+        {
+            if (!isAuthenticated)
+            {
+                return;
+            }
+
+            var responseHttp = await Repository.GetAsync<int>("/api/temporalOrders/count");
+            if (responseHttp.Error)
+            {
+                return;
+            }
+            counter = responseHttp.Response;
         }
 
         private async Task SelectedRecordsNumberAsync(int recordsnumber)
@@ -119,8 +149,46 @@ namespace Orders.Frontend.Pages
             await SelectedPageAsync(page);
         }
 
-        private void AddToCartAsync(int productId)
+        private async Task AddToCartAsync(int productId)
         {
+            if (!isAuthenticated)
+            {
+                Modal.Show<Login>();
+                var toast1 = SweetAlertService.Mixin(new SweetAlertOptions
+                {
+                    Toast = true,
+                    Position = SweetAlertPosition.BottomEnd,
+                    ShowConfirmButton = false,
+                    Timer = 3000
+                });
+                await toast1.FireAsync(icon: SweetAlertIcon.Error, message: "Debes haber iniciado sesión para poder agregar productos al carro de compras.");
+                return;
+            }
+
+            var temporalOrderDTO = new TemporalOrderDTO
+            {
+                ProductId = productId
+            };
+
+            var httpActionResponse = await Repository.PostAsync("/api/temporalOrders/full", temporalOrderDTO);
+            if (httpActionResponse.Error)
+            {
+                var message = await httpActionResponse.GetErrorMessageAsync();
+                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+
+            await LoadCounterAsync();
+
+            var toast2 = SweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+            await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Producto agregado al carro de compras.");
         }
+
     }
 }
